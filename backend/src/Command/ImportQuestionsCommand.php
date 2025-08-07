@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Card;
-use App\Entity\Question;
+use App\Service\Factory\QuestionFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -18,7 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ImportQuestionsCommand extends Command
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly QuestionFactory $questionFactory
     ) {
         parent::__construct();
     }
@@ -52,21 +53,21 @@ class ImportQuestionsCommand extends Command
                 $theme1 = trim($row[1] ?? '');
                 $question1 = trim($row[2] ?? '');
                 $answer1 = trim($row[3] ?? '');
-                $this->addQuestionToCard($card, $theme1, $question1, $answer1);
+                $this->questionFactory->createAndAddToCard($card, $theme1, $question1, $answer1);
 
                 // Question: QSER
                 $row2 = $rows[$i + 1] ?? [];
                 $theme2 = trim($row2[1] ?? '');
                 $question2 = trim($row2[2] ?? '');
                 $answer2 = trim($row2[3] ?? '');
-                $this->addQuestionToCard($card, $theme2, $question2, $answer2);
+                $this->questionFactory->createAndAddToCard($card, $theme2, $question2, $answer2);
 
                 // Question: 1er S
                 $row3 = $rows[$i + 2] ?? [];
                 $theme3 = trim($row3[1] ?? '');
                 $question3 = trim($row3[2] ?? '');
                 $answer3 = trim($row3[3] ?? '');
-                $this->addQuestionToCard($card, $theme3, $question3, $answer3);
+                $this->questionFactory->createAndAddToCard($card, $theme3, $question3, $answer3);
 
                 $this->entityManager->persist($card);
                 $i += 2;
@@ -77,20 +78,5 @@ class ImportQuestionsCommand extends Command
         $output->writeln('Import complete. :)');
 
         return Command::SUCCESS;
-    }
-
-    private function addQuestionToCard(Card $card, string $theme, string $questionText, string $answer): void
-    {
-        if (empty($theme) || empty($questionText)) {
-            return;
-        }
-
-        $question = new Question();
-        $question->setTheme($theme);
-        $question->setText($questionText);
-        $question->setAnswer($answer);
-
-        $question->setCard($card);
-        $card->addQuestion($question);
     }
 }
