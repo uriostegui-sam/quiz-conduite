@@ -6,15 +6,55 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Controller\QuestionMediaUploadController;
 use App\Repository\QuestionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\RequestBody;
 
 #[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/questions/{id}/media',
+            controller: QuestionMediaUploadController::class,
+            deserialize: false,
+            openapi: new Operation(
+                summary: 'Upload or replace the media file of a question',
+                requestBody: new RequestBody(
+                    description: 'Media file upload (JPG, PNG, GIF)',
+                    content: new \ArrayObject([
+                        'multipart/form-data' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'mediaFile' => [
+                                        'type' => 'string',
+                                        'format' => 'binary'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ])
+                )
+            )
+        )
+    ]
+)]
+#[GetCollection()]
+#[Get()]
+#[Post()]
+#[Patch()]
+#[Delete()]
 #[ApiFilter(SearchFilter::class, properties: ['theme' => 'exact'])]
 class Question
 {
