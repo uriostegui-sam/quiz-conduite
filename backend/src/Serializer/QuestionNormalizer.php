@@ -1,5 +1,4 @@
 <?php
-// api/src/Serializer/QuestionNormalizer.php
 
 namespace App\Serializer;
 
