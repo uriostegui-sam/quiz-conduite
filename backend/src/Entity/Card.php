@@ -3,14 +3,42 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use App\Controller\CardsRandomController;
 use App\Repository\CardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model\Operation;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CardRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/cards/random',
+            controller: CardsRandomController::class,
+            deserialize: false,
+            openapi: new Operation(
+                summary: 'Get random cards',
+                description: 'Fetches a specified number of random cards.',
+                parameters: [
+                    ['name' => 'count', 'in' => 'query', 'required' => false, 'schema' => ['type' => 'integer', 'default' => 1]]
+                ]
+            )
+        )
+    ]
+)]
+#[GetCollection()]
+#[Get()]
+#[Post()]
+#[Patch()]
+#[Delete()]
 class Card
 {
     #[ORM\Id]
@@ -19,10 +47,12 @@ class Card
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['card:read'])]
     #[Assert\Positive]
     private ?int $number = null;
 
     #[ORM\OneToMany(mappedBy: 'card', targetEntity: Question::class, cascade: ['persist', 'remove'])]
+    #[Groups(['card:read'])]
     private Collection $questions;
 
     public function __construct()

@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\RequestBody;
+use App\Controller\QuestionsRandomController;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
@@ -47,6 +49,19 @@ use ApiPlatform\OpenApi\Model\RequestBody;
                     ])
                 )
             )
+        ),
+        new Get(
+            uriTemplate: '/questions/random',
+            controller: QuestionsRandomController::class,
+            deserialize: false,
+            openapi: new Operation(
+                summary: 'Get random questions by theme',
+                description: 'Fetches a specified number of random questions from a given theme.',
+                parameters: [
+                    ['name' => 'count', 'in' => 'query', 'required' => false, 'schema' => ['type' => 'integer', 'default' => 1]],
+                    ['name' => 'theme', 'in' => 'query', 'required' => true, 'schema' => ['type' => 'string']]
+                ]
+            )
         )
     ]
 )]
@@ -65,14 +80,17 @@ class Question
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['card:read'])]
     private ?string $theme = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['card:read'])]
     private ?string $text = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['card:read'])]
     private ?string $answer = null;
 
     #[ORM\Column(length: 255, nullable: true)]
