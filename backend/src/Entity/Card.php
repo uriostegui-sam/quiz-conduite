@@ -7,6 +7,7 @@ use App\Repository\CardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CardRepository::class)]
 #[ApiResource]
@@ -18,6 +19,7 @@ class Card
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\Positive]
     private ?int $number = null;
 
     #[ORM\OneToMany(mappedBy: 'card', targetEntity: Question::class, cascade: ['persist', 'remove'])]
