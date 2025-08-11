@@ -16,6 +16,41 @@ class QuestionRepository extends ServiceEntityRepository
         parent::__construct($registry, Question::class);
     }
 
+    public function findRandomQuestionsByTheme(int $count, string $theme): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT id FROM question WHERE theme = :theme ORDER BY RANDOM() LIMIT :count';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue('theme', $theme);
+        $stmt->bindValue('count', $count, \PDO::PARAM_INT);
+        $rows = $stmt->executeQuery()->fetchAllAssociative();
+        $ids = array_column($rows, 'id');
+
+        if (!$ids) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('q')
+            ->andWhere('q.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    public function getIncorrectAnswersForQuestion(int $questionId, string $theme, int $limit = 3): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT answer FROM question WHERE theme = :theme AND id != :id ORDER BY RANDOM() LIMIT :limit';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue('theme', $theme);
+        $stmt->bindValue('id', $questionId);
+        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $rows = $stmt->executeQuery()->fetchAllAssociative();
+        return array_column($rows, 'answer');
+    }
+
+
     //    /**
     //     * @return Question[] Returns an array of Question objects
     //     */
