@@ -16,6 +16,28 @@ class CardRepository extends ServiceEntityRepository
         parent::__construct($registry, Card::class);
     }
 
+    public function findRandomCards(int $count): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT id FROM card ORDER BY RANDOM() LIMIT :count';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue('count', $count, \PDO::PARAM_INT);
+        $rows = $stmt->executeQuery()->fetchAllAssociative();
+        $ids = array_column($rows, 'id');
+
+        if (!$ids) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.questions', 'q')
+            ->addSelect('q')
+            ->andWhere('c.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Card[] Returns an array of Card objects
     //     */
