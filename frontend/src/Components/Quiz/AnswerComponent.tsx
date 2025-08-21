@@ -4,18 +4,27 @@ const AnswerComponent = (props: {
   correctAnswer: string;
   setChosenAnswer: (answer: string) => void;
   chosenAnswer: string | null;
+  score: number;
+  setScore: (score: number) => void;
 }) => {
   const selectAnswer = (e: React.MouseEvent<HTMLLIElement>) => {
     if (props.chosenAnswer) return;
     const input = e.target as HTMLElement;
-    props.setChosenAnswer(input.textContent || "");
+    const selected = input.textContent || "";
+    props.setChosenAnswer(selected);
+
+    if(selected === props.correctAnswer){
+      props.setScore(props.score + 1);
+    }
   };
 
   const checkAnswer = () => {
     if (props.answer === props.chosenAnswer) {
-      if (props.chosenAnswer === props.correctAnswer)
+      if (props.chosenAnswer === props.correctAnswer) {
         return "bg-green-100 border-green-100";
-      else return "bg-red-100 border-red-100";
+      } else {
+        return "bg-red-100 border-red-100";
+      }
     }
 
     if (props.chosenAnswer !== null) {

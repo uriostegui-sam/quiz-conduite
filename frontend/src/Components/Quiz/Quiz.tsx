@@ -4,6 +4,7 @@ import Card from "./Card";
 import { useQuery } from "@tanstack/react-query";
 import type { Question } from "../../Interfaces/Question";
 import { useState } from "react";
+import ResultQuestionsComponent from "../Result/ResultQuestionsComponent";
 
 const Quiz = () => {
   const { data, isLoading, error } = useQuery<Question[], Error>({
@@ -17,6 +18,18 @@ const Quiz = () => {
   });
 
   let [index, setIndex] = useState(1);
+  let [score, setScore] = useState(0);
+
+  const cards = data && data.length > 0 && index <= data.length && (
+    <Card
+      key={data[index - 1].id}
+      card={data[index - 1]}
+      index={index}
+      setIndex={setIndex}
+      score={score}
+      setScore={setScore}
+    />
+  );
 
   return (
     <div className="container flex flex-col gap-5 justify-center items-center">
@@ -25,18 +38,20 @@ const Quiz = () => {
       <div>
         {isLoading && <p>Loading questions...</p>}
         {error && <p className="text-red-500">Error loading questions</p>}
-        {data && data.length > 0 && index <= data.length &&(
-            <Card
-              key={data[index - 1].id}
-              card={data[index - 1]}
-              index={index}
-              setIndex={setIndex}
-            />
-          )}
+        {cards ? (
+          cards
+        ) : (
+          <ResultQuestionsComponent
+            score={score}
+            totalQuestions={data ? data?.length : 0}
+          />
+        )}
       </div>
-      <div className="question-number">
-        {index} of {data?.length} questions
-      </div>
+      {data && index <= data.length && (
+        <div className="question-number">
+          {index} of {data?.length} questions
+        </div>
+      )}
     </div>
   );
 };
