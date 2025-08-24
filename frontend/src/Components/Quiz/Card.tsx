@@ -10,6 +10,8 @@ const Card = (props: {
   setIndex: (index: number) => void;
   score: number;
   setScore: (score: number) => void;
+  playing?: boolean;
+  setPlaying?: (playing: boolean) => void;
 }) => {
   const { all_answers, incorrect_answers, correct_answer } = props.card;
   const [chosenAnswer, setChosenAnswer] = useState<string | null>(null);
@@ -36,6 +38,8 @@ const Card = (props: {
         setIndex={props.setIndex}
         chosenAnswer={chosenAnswer}
         inQuiz={true}
+        playing={props.playing}
+        setPlaying={props.setPlaying}
       />
     </div>
   );
