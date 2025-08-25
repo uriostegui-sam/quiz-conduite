@@ -25,11 +25,11 @@ const StartComponent = (props: {
 
   return (
     <div className="container flex flex-col gap-10 justify-center items-center">
-      <p className="text-2xl">Quiz your knowledge!</p>
+      <p className="text-2xl">Testez vos connaissances !</p>
       <div className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-5">
           <label className="text-lg font-bold">
-            Number of Questions (5-66):
+            Nombre de Questions (5-66):
           </label>
           <input
             className="text-lg border-2 border-cyan-700 rounded-lg py-2 px-3"

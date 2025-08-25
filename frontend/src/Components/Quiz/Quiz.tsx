@@ -68,7 +68,7 @@ const Quiz = () => {
 
   return (
     <div className="container flex flex-col gap-5 justify-center items-center">
-      <h1>Quiz conduite</h1>
+      <h1>Quiz au volant</h1>
       <hr />
       <div>
         {!start && !playing && (
@@ -80,9 +80,9 @@ const Quiz = () => {
             categoryOptions={categoryOptions}
           />
         )}
-        {playing && isLoading && <p>Loading questions...</p>}
+        {playing && isLoading && <p>Chargement des questions...</p>}
         {playing && error && (
-          <p className="text-red-500">Error loading questions</p>
+          <p className="text-red-500">Erreur lors du chargement des questions</p>
         )}
         {playing && cards
           ? cards
@@ -102,7 +102,7 @@ const Quiz = () => {
       </div>
       {playing && data && index <= data.length && (
         <div className="question-number">
-          {index} of {data?.length} questions
+          {index} sur {data?.length} questions
         </div>
       )}
     </div>

@@ -40,19 +40,19 @@ const Button = (props: {
     >
       {props.inQuiz && (
         <span className="relative flex items-center gap-3">
-          <p>Next question</p>
+          <p>Question suivante</p>
           <img src={ArrowRight} className="w-5 h-5" />
         </span>
       )}
       {props.startButton && (
         <span className="relative flex items-center gap-3">
-          <p>Start the game</p>
+          <p>Démarrer le jeu</p>
           <img src={Play} className="w-5 h-5" />
         </span>
       )}
       {!props.inQuiz && !props.startButton && (
         <span className="relative flex items-center gap-3">
-          <p>Restart game</p>
+          <p>Redémarrer le jeu</p>
           <img src={Repeat} className="w-5 h-5" />
         </span>
       )}
