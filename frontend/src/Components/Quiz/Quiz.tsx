@@ -63,6 +63,7 @@ const Quiz = () => {
       setFormData(startData)
       setStart(false)
       setPlaying(false)
+      setReStart(false)
     }, [reStart]);
 
   return (
