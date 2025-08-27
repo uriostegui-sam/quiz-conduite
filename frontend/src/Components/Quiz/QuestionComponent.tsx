@@ -4,7 +4,7 @@ import AnswerComponent from "./AnswerComponent";
 import Title from "./TitleComponent";
 import Button from "./ButtonComponent";
 
-const Card = (props: {
+const QuestionComponent = (props: {
   card: Question;
   index: number;
   setIndex: (index: number) => void;
@@ -45,4 +45,4 @@ const Card = (props: {
   );
 };
 
-export default Card;
+export default QuestionComponent;
