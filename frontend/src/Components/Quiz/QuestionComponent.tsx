@@ -12,15 +12,17 @@ const QuestionComponent = (props: {
   setScore: (score: number) => void;
   playing?: boolean;
   setPlaying?: (playing: boolean) => void;
+  isCard?: boolean;
+  onAnswer?: () => void;
 }) => {
   const { all_answers, incorrect_answers, correct_answer } = props.card;
   const [chosenAnswer, setChosenAnswer] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6">
-      <Title title={props.card.question} />
+    <div className="flex flex-col items-center justify-center gap-6 ">
+      <Title title={props.card?.question} />
       <ul className="flex flex-col gap-3">
-        {all_answers.map((answer, i) => (
+        {all_answers.map((answer: string, i: number) => (
           <AnswerComponent
             key={i}
             answer={answer}
@@ -33,14 +35,18 @@ const QuestionComponent = (props: {
           />
         ))}
       </ul>
-      <Button
-        index={props.index}
-        setIndex={props.setIndex}
-        chosenAnswer={chosenAnswer}
-        inQuiz={true}
-        playing={props.playing}
-        setPlaying={props.setPlaying}
-      />
+        <Button
+          index={props.index}
+          setIndex={props.setIndex}
+          chosenAnswer={chosenAnswer}
+          inQuiz={true}
+          playing={props.playing}
+          setPlaying={props.setPlaying}
+          isCard={props.isCard}
+          onClickAfter={() => {
+            if (props.onAnswer) props.onAnswer(); // close + mark answered
+          }}
+        />
     </div>
   );
 };
