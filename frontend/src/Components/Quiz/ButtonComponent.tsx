@@ -14,6 +14,8 @@ const Button = (props: {
   setReStart?: (reStart: boolean) => void;
   playing?: boolean;
   setPlaying?: (playing: boolean) => void;
+  isCard?: boolean;
+  onClickAfter?: () => void;
 }) => {
   const next = () => {
     if (props.chosenAnswer !== null) {
@@ -30,11 +32,15 @@ const Button = (props: {
     if(props.setStart) props.setStart(true)
   };
 
+  const card = () => {
+    if (props.onClickAfter) props.onClickAfter();
+  };
+
   const isNotClicked = props.chosenAnswer === null;
 
   return (
     <button
-      onClick={props.inQuiz ? next : (props.startButton ? start : restart)}
+      onClick={props.inQuiz && !props.isCard ? next : (props.startButton && !props.isCard ? start : (props.isCard ? card : restart))}
       className={`relative h-12 overflow-hidden rounded px-5 py-2.5 text-white transition-all duration-300 bg-cyan-700 hover:bg-cyan-700 hover:ring-2 hover:ring-cyan-700 hover:ring-offset-2 disabled:bg-gray-200 disabled:border-gray-200`}
       disabled={props.inQuiz ? isNotClicked : false}
     >
