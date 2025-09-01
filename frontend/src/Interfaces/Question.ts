@@ -5,4 +5,5 @@ export interface Question {
   incorrect_answers: string[];
   all_answers: string[];
   media_url?: string;
+  category: string;
 }
