@@ -7,22 +7,14 @@ import { useEffect, useState } from "react";
 import ResultQuestionsComponent from "../Result/ResultQuestionsComponent";
 import Start from "./StartComponent";
 import type { Form } from "../../Interfaces/Form";
-import Card from "./Card";
 import type { Card as CardInterface } from "../../Interfaces/Card";
+import CardContainer from "./CardContainer";
 
 const Quiz = () => {
   const startData: Form = {
     questions: 5,
     category: "",
     type: "cards",
-  };
-
-  const categoryOptions = {
-    "": "Toutes les catégories",
-    QSER: "Sécurité routière",
-    VI: "Vérification intérieure",
-    VE: "Vérification extérieure",
-    "1er S": "1er secours",
   };
 
   let [index, setIndex] = useState(1);
@@ -33,14 +25,33 @@ const Quiz = () => {
   const [playing, setPlaying] = useState(false);
   const [cardIndex, setCardIndex] = useState(0);
 
+  const categoryOptions = {
+    "": "Toutes les catégories",
+    QSER: "Sécurité routière",
+    VI: "Vérification intérieure",
+    VE: "Vérification extérieure",
+    "1er S": "1er secours",
+  };
+
   const urlCategory =
     formData.category === "" ? "" : `&theme=${formData.category}`;
 
-  const { data, isLoading, error } = useQuery<CardInterface[], Error>({
+  function isQuestion(data: Question[] | CardInterface[]): data is Question[] {
+    return Array.isArray(data) && "id" in data[0];
+  }
+
+  function isCard(data: Question[] | CardInterface[]): data is CardInterface[] {
+    return Array.isArray(data) && "cardNumber" in data[0];
+  }
+
+  const { data, isLoading, error } = useQuery<
+    Question[] | CardInterface[],
+    Error
+  >({
     queryKey: ["questions"],
     queryFn: async () => {
       setPlaying(true);
-      const response = await axios.get<CardInterface[]>(
+      const response = await axios.get<Question[] | CardInterface[]>(
         import.meta.env.VITE_API_URL +
           `/${formData.type}/random?count=${formData.questions}${urlCategory}`
       );
@@ -49,81 +60,6 @@ const Quiz = () => {
     enabled: start,
   });
 
-  const currentCardSet = data?.[cardIndex];
-
-  const cardsNumbered = () => {
-    const [activeQuestion, setActiveQuestion] = useState<number | null>(null);;
-    const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
-
-    const flipTheCard = (id: number) => {
-      if (answeredQuestions.includes(id)) return;
-      
-      setActiveQuestion(id)
-    };
-
-    if (!currentCardSet) return null;
-    return (
-      <div>
-        <h2>Conjunto {currentCardSet.cardNumber}</h2>
-        <Card
-          key={currentCardSet.cardNumber}
-          cardData={currentCardSet}
-          index={index}
-          setIndex={setIndex}
-          score={score}
-          setScore={setScore}
-          flipTheCard={flipTheCard}
-          activeQuestion={activeQuestion}
-          setActiveQuestion={setActiveQuestion}
-          answeredQuestions={answeredQuestions}
-          setAnsweredQuestions={setAnsweredQuestions}
-        />
-        <button onClick={() => setCardIndex(cardIndex + 1)}>
-          Siguiente conjunto
-        </button>
-      </div>
-    );
-  };
-
-  // const cardsNumbered = () => {
-  //   return data?.map((card) => (
-  //     <div key={card.id}>
-  //       {
-  //         card?.questions.map((question, j) => {
-  //           console.log(card)
-  //           console.log(question)
-  //           // <QuestionComponent
-  //           //   key={question.id}
-  //           //   card={question}
-  //           //   index={index}
-  //           //   setIndex={setIndex}
-  //           //   score={score}
-  //           //   setScore={setScore}
-  //           // />;
-  //         })
-  //         // console.log(card.questions[0]);
-  //       }
-  //     </div>
-  //   ));
-  // };
-
-  const cards = () =>
-    data &&
-    data.length > 0 &&
-    index <= data.length && (
-      <QuestionComponent
-        key={data[index - 1].id}
-        card={data[index - 1]}
-        index={index}
-        setIndex={setIndex}
-        score={score}
-        setScore={setScore}
-      />
-    );
-
-  const isCardOrQuestion = formData.category !== "" ? cards() : cardsNumbered();
-
-  
   useEffect(() => {
     setIndex(1);
     setScore(0);
@@ -153,7 +89,28 @@ const Quiz = () => {
             Erreur lors du chargement des questions
           </p>
         )}
-        <div>{isCardOrQuestion}</div>
+        <div>
+          {data && isQuestion(data) && index > 0 && index <= data.length && (
+            <QuestionComponent
+              key={data[index - 1].id}
+              card={data[index - 1]}
+              index={index}
+              setIndex={setIndex}
+              score={score}
+              setScore={setScore}
+            />
+          )}
+          {data && isCard(data) && (
+              <CardContainer
+                cardData={data?.[cardIndex]}
+                cardIndex={cardIndex}
+                setIndex={setIndex}
+                score={score}
+                setScore={setScore}
+                setCardIndex={setCardIndex}
+              />
+            )}
+        </div>
         {/* {playing && isCardOrQuestion
           ? isCardOrQuestion
           : start && (
