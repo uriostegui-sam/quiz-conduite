@@ -33,6 +33,7 @@ class CardsRandomController extends AbstractController
                     'incorrect_answers' => $incorrect,
                     'all_answers' => $options,
                     'mediaUrl' => $question->getMediaUrl(),
+                    'category' => $question->getTheme(),
                 ];
             }
             $payload[] = [
