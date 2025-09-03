@@ -1,10 +1,10 @@
 import { useState } from "react";
-import "./Card.css";
+import "./CardWithQuestions.css";
 import QuestionComponent from "./QuestionComponent";
 import type { Card } from "../../Interfaces/Card";
 import type { Question } from "../../Interfaces/Question";
 
-const Card = (props: {
+const CardWithQuestions = (props: {
   index: number;
   setIndex: (index: number) => void;
   score: number;
@@ -24,7 +24,6 @@ const Card = (props: {
     (question) => question.id === props.activeQuestion
   );
 
-  console.log(props.cardData);
   return (
     <div
       key={props.cardData.cardNumber}
@@ -77,4 +76,4 @@ const Card = (props: {
   );
 };
 
-export default Card;
+export default CardWithQuestions;
