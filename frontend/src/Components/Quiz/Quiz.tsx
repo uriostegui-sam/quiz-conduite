@@ -4,11 +4,12 @@ import QuestionComponent from "./QuestionComponent";
 import { useQuery } from "@tanstack/react-query";
 import type { Question } from "../../Interfaces/Question";
 import { useEffect, useState } from "react";
-import ResultQuestionsComponent from "../Result/ResultQuestionsComponent";
+import ResultComponent from "../Result/ResultComponent";
 import Start from "./StartComponent";
 import type { Form } from "../../Interfaces/Form";
 import type { Card as CardInterface } from "../../Interfaces/Card";
 import CardContainer from "./CardContainer";
+import ReactConfetti from "react-confetti";
 
 const Quiz = () => {
   const startData: Form = {
@@ -63,6 +64,7 @@ const Quiz = () => {
   useEffect(() => {
     setIndex(1);
     setScore(0);
+    setCardIndex(0);
     setFormData(startData);
     setStart(false);
     setPlaying(false);
@@ -73,6 +75,10 @@ const Quiz = () => {
     index - 1 == data?.length && setPlaying(false);
   }, [index])
 
+  useEffect(() => {
+    cardIndex + 1 == formData.questions && setPlaying(false);
+  }, [cardIndex])
+  
   return (
     <div className="container flex flex-col gap-5 justify-center items-center">
       <h1>Quiz au volant</h1>
@@ -104,7 +110,7 @@ const Quiz = () => {
               setScore={setScore}
             />
           )}
-          {start && playing && data && isCard(data) && (
+          {start && playing && data && isCard(data) && cardIndex + 1 > 0 && cardIndex + 1 <= data.length && (
             <CardContainer
               cardData={data?.[cardIndex]}
               cardIndex={cardIndex}
@@ -115,22 +121,26 @@ const Quiz = () => {
             />
           )}
         </div>
-        {start && !playing && data && isQuestion(data) && (
-          <ResultQuestionsComponent
-            score={score}
-            totalQuestions={data ? data?.length : 0}
-            category={formData.category}
-            categoryOptions={categoryOptions}
-            start={start}
-            setStart={setStart}
-            reStart={reStart}
-            setReStart={setReStart}
-          />
+        {start && !playing && data && (
+          <>
+            <ReactConfetti />
+            <ResultComponent
+              score={score}
+              totalQuestions={data ? data?.length : 0}
+              category={formData.category}
+              categoryOptions={categoryOptions}
+              start={start}
+              setStart={setStart}
+              reStart={reStart}
+              setReStart={setReStart}
+              isQuestion={isQuestion}
+            />
+          </>
         )}
       </div>
       {playing && data && index <= data.length && (
         <div className="question-number">
-          {index} sur {data?.length} questions
+          {isQuestion(data) ? index : cardIndex + 1} sur {data?.length} {isQuestion(data) ? `questions` : `ensemble de cartes`}
         </div>
       )}
     </div>
