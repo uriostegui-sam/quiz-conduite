@@ -1,6 +1,8 @@
+import type { Card } from "../../Interfaces/Card";
+import type { Question } from "../../Interfaces/Question";
 import Button from "../Quiz/ButtonComponent";
 
-const ResultQuestionsComponent = (props: {
+const ResultComponent = (props: {
   score: number;
   totalQuestions: number;
   category: string;
@@ -11,7 +13,9 @@ const ResultQuestionsComponent = (props: {
   setReStart?: (reStart: boolean) => void;
   index?: number;
   setIndex?: (index: number) => void;
+  isQuestion?: (data: Question[] | Card[]) => void;
 }) => {
+  const scoreTotal = props.category === "" ? props.totalQuestions * 3 : props.totalQuestions;
   return (
     <div className="container flex flex-col gap-10 justify-center items-center">
       <h2 className="text-4xl">
@@ -21,7 +25,7 @@ const ResultQuestionsComponent = (props: {
         </span>
       </h2>
       <h3 className="text-3xl">
-        You scored {props.score}/{props.totalQuestions} correct answers
+        Vous avez obtenu {props.score}/{scoreTotal} bonnes réponses
       </h3>
       <Button
         inQuiz={false}
@@ -36,4 +40,4 @@ const ResultQuestionsComponent = (props: {
   );
 };
 
-export default ResultQuestionsComponent;
+export default ResultComponent;
