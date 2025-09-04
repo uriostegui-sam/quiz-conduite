@@ -69,6 +69,10 @@ const Quiz = () => {
     setReStart(false);
   }, [reStart]);
 
+  useEffect(() => {
+    index - 1 == data?.length && setPlaying(false);
+  }, [index])
+
   return (
     <div className="container flex flex-col gap-5 justify-center items-center">
       <h1>Quiz au volant</h1>
@@ -90,7 +94,7 @@ const Quiz = () => {
           </p>
         )}
         <div>
-          {data && isQuestion(data) && index > 0 && index <= data.length && (
+          {start && playing && data && isQuestion(data) && index > 0 && index <= data.length && (
             <QuestionComponent
               key={data[index - 1].id}
               card={data[index - 1]}
@@ -100,31 +104,29 @@ const Quiz = () => {
               setScore={setScore}
             />
           )}
-          {data && isCard(data) && (
-              <CardContainer
-                cardData={data?.[cardIndex]}
-                cardIndex={cardIndex}
-                setIndex={setIndex}
-                score={score}
-                setScore={setScore}
-                setCardIndex={setCardIndex}
-              />
-            )}
+          {start && playing && data && isCard(data) && (
+            <CardContainer
+              cardData={data?.[cardIndex]}
+              cardIndex={cardIndex}
+              setIndex={setIndex}
+              score={score}
+              setScore={setScore}
+              setCardIndex={setCardIndex}
+            />
+          )}
         </div>
-        {/* {playing && isCardOrQuestion
-          ? isCardOrQuestion
-          : start && (
-              <ResultQuestionsComponent
-                score={score}
-                totalQuestions={data ? data?.length : 0}
-                category={formData.category}
-                categoryOptions={categoryOptions}
-                start={start}
-                setStart={setStart}
-                reStart={reStart}
-                setReStart={setReStart}
-              />
-            )} */}
+        {start && !playing && data && isQuestion(data) && (
+          <ResultQuestionsComponent
+            score={score}
+            totalQuestions={data ? data?.length : 0}
+            category={formData.category}
+            categoryOptions={categoryOptions}
+            start={start}
+            setStart={setStart}
+            reStart={reStart}
+            setReStart={setReStart}
+          />
+        )}
       </div>
       {playing && data && index <= data.length && (
         <div className="question-number">
