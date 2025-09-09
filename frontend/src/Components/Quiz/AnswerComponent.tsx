@@ -6,6 +6,10 @@ const AnswerComponent = (props: {
   chosenAnswer: string | null;
   score: number;
   setScore: (score: number) => void;
+  isCorrect?: boolean | null | undefined;
+  setIsCorrect?: (isCorrect: boolean | null | undefined) => void;
+  questionResults?: Record<number, 'correct'|'incorrect'|null> | undefined;
+  setQuestionResults?: (questionResults: Record<number, 'correct'|'incorrect'|null>) => void;
 }) => {
   const selectAnswer = (e: React.MouseEvent<HTMLLIElement>) => {
     if (props.chosenAnswer) return;
@@ -15,6 +19,9 @@ const AnswerComponent = (props: {
 
     if(selected === props.correctAnswer){
       props.setScore(props.score + 1);
+      props.setIsCorrect?.(true);
+    } else {
+      props.setIsCorrect?.(false);
     }
   };
 
