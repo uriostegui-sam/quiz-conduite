@@ -1,3 +1,7 @@
+.answered .front .category {
+  text-decoration: line-through !important;
+}
+
 .card {
   display: flex;
   flex-direction: row;
@@ -6,7 +10,6 @@
   position: relative;
   border-radius: 0.35rem;
   box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.5);
-  background-color: rgba(245, 245, 245, 0.973);
   transform-style: preserve-3d;
   transition: transform 0.6s;
   cursor: pointer;
@@ -27,8 +30,10 @@
   padding: 1rem;
   backface-visibility: hidden;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 3rem;
 }
 
 .card .back {

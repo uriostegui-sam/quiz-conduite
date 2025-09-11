@@ -14,6 +14,10 @@ const QuestionComponent = (props: {
   setPlaying?: (playing: boolean) => void;
   isCard?: boolean;
   onAnswer?: () => void;
+  isCorrect?: boolean | null | undefined;
+  setIsCorrect?: (isCorrect: boolean | null | undefined) => void;
+  questionResults?: Record<number, 'correct'|'incorrect'|null>;
+  setQuestionResults?: (questionResults: Record<number, 'correct'|'incorrect'|null>) => void;
 }) => {
   const { all_answers, incorrect_answers, correct_answer } = props.card;
   const [chosenAnswer, setChosenAnswer] = useState<string | null>(null);
@@ -32,6 +36,10 @@ const QuestionComponent = (props: {
             chosenAnswer={chosenAnswer}
             setScore={props.setScore}
             score={props.score}
+            isCorrect={props.isCorrect}
+            setIsCorrect={props.setIsCorrect}
+            questionResults={props.questionResults}
+            setQuestionResults={props.setQuestionResults}
           />
         ))}
       </ul>
