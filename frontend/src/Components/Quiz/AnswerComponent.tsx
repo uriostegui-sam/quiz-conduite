@@ -11,6 +11,9 @@ const AnswerComponent = (props: {
   questionResults?: Record<number, 'correct'|'incorrect'|null> | undefined;
   setQuestionResults?: (questionResults: Record<number, 'correct'|'incorrect'|null>) => void;
 }) => {
+  
+  const baseUrl = import.meta.env.VITE_IMGS_QUESTIONS_URL
+  
   const selectAnswer = (e: React.MouseEvent<HTMLLIElement>) => {
     if (props.chosenAnswer) return;
     const input = e.target as HTMLElement;
@@ -41,12 +44,23 @@ const AnswerComponent = (props: {
     return "bg-white border-cyan-700 hover:bg-[#00759516] hover:border-[#00759516]";
   };
 
+  const checkIfImg = (isHref: string): React.ReactNode => {
+    const imageFileFormats = ['avif', 'png', 'jpg', 'webp'];
+    const extension = isHref.split('.').pop()?.toLowerCase();;
+
+    if (extension && imageFileFormats.includes(extension)) {
+      return <img src={baseUrl + '/' + isHref} className="w-40" alt={`images de ${props.correctAnswer}`} />
+    } else {
+      return isHref
+    };
+  }
+
   return (
     <li
       onClick={selectAnswer}
       className={`border-1 rounded-md flex items justify-center py-2 px-3 ${checkAnswer()}`}
     >
-      {props.answer}
+      {checkIfImg(props.answer)}
     </li>
   );
 };
