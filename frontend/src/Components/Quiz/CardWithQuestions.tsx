@@ -23,6 +23,7 @@ const CardWithQuestions = (props: {
   const [isCard, setIsCard] = useState<boolean>(true);
   const [isCorrect, setIsCorrect] = useState<boolean | null | undefined>(null)
   const [questionResults, setQuestionResults] = useState<Record<number, 'correct'|'incorrect'|null>>({});
+  const [userResponse, setUserResponse] = useState<Record<number, string | null>>({});
 
   const activeQuestion = props.cardData.questions.find(
     (question) => question.id === props.activeQuestion
@@ -85,12 +86,14 @@ const CardWithQuestions = (props: {
                   setQuestionResults((prev) => ({
                     ...prev,
                     [activeQuestion.id]: isCorrect ? 'correct' : 'incorrect'
-                  }))
+                  }))                  
                 }}
                 questionResults={questionResults}
                 setQuestionResults={setQuestionResults}
                 isCorrect={isCorrect}
                 setIsCorrect={setIsCorrect}
+                userResponse={userResponse}
+                setUserResponse={setUserResponse}
               />
             )}
           </div>
