@@ -14,8 +14,6 @@ const CardContainer = (props: {
   const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
 
   const flipTheCard = (id: number) => {
-    if (answeredQuestions.includes(id)) return;
-
     setActiveQuestion(id);
   };
   return (
