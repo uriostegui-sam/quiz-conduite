@@ -15,12 +15,15 @@ const AnswerComponent = (props: {
   setUserResponse?: React.Dispatch<React.SetStateAction<Record<number, string | null>>>;
 }) => {
 
-  const baseUrl = import.meta.env.VITE_IMGS_QUESTIONS_URL
+  const baseUrl = import.meta.env.VITE_IMGS_QUESTIONS_URL;
   
   const selectAnswer = (e: React.MouseEvent<HTMLLIElement>) => {
     if (props.chosenAnswer) return;
-    const input = e.target as HTMLElement;
-    const selected = input.textContent || "";
+
+    const input = e.target as HTMLImageElement | HTMLElement;
+    const srcImage = input.getAttribute('src')?.slice(baseUrl.length + 1);
+    
+    const selected = input.textContent || srcImage || '';
     
     props.setChosenAnswer?.(selected);
 
