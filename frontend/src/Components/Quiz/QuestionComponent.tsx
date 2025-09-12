@@ -16,10 +16,14 @@ const QuestionComponent = (props: {
   onAnswer?: () => void;
   isCorrect?: boolean | null | undefined;
   setIsCorrect?: (isCorrect: boolean | null | undefined) => void;
-  questionResults?: Record<number, 'correct'|'incorrect'|null>;
-  setQuestionResults?: (questionResults: Record<number, 'correct'|'incorrect'|null>) => void;
+  questionResults?: Record<number, "correct" | "incorrect" | null>;
+  setQuestionResults?: (
+    questionResults: Record<number, "correct" | "incorrect" | null>
+  ) => void;
+  userResponse?: Record<number, string | null>;
+  setUserResponse?: React.Dispatch<React.SetStateAction<Record<number, string | null>>>;
 }) => {
-  const { all_answers, incorrect_answers, correct_answer } = props.card;
+  const { id, all_answers, incorrect_answers, correct_answer } = props.card;
   const [chosenAnswer, setChosenAnswer] = useState<string | null>(null);
 
   return (
@@ -29,6 +33,7 @@ const QuestionComponent = (props: {
         {all_answers.map((answer: string, i: number) => (
           <AnswerComponent
             key={i}
+            id={id}
             answer={answer}
             incorrectAnswers={incorrect_answers}
             correctAnswer={correct_answer}
@@ -38,23 +43,23 @@ const QuestionComponent = (props: {
             score={props.score}
             isCorrect={props.isCorrect}
             setIsCorrect={props.setIsCorrect}
-            questionResults={props.questionResults}
-            setQuestionResults={props.setQuestionResults}
+            userResponse={props.userResponse}
+            setUserResponse={props.setUserResponse}            
           />
         ))}
       </ul>
-        <Button
-          index={props.index}
-          setIndex={props.setIndex}
-          chosenAnswer={chosenAnswer}
-          inQuiz={true}
-          playing={props.playing}
-          setPlaying={props.setPlaying}
-          isCard={props.isCard}
-          onClickAfter={() => {
-            if (props.onAnswer) props.onAnswer(); // close + mark answered
-          }}
-        />
+      <Button
+        index={props.index}
+        setIndex={props.setIndex}
+        chosenAnswer={chosenAnswer}
+        inQuiz={true}
+        playing={props.playing}
+        setPlaying={props.setPlaying}
+        isCard={props.isCard}
+        onClickAfter={() => {
+          if (props.onAnswer) props.onAnswer(); // close + mark answered
+        }}
+      />
     </div>
   );
 };
