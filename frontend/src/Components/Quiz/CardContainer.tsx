@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Card as CardInterface } from "../../Interfaces/Card";
 import Card from "./CardWithQuestions";
 
@@ -12,6 +12,10 @@ const CardContainer = (props: {
 }) => {
   const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
   const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
+
+  useEffect(() => {
+    setAnsweredQuestions([]);
+  }, [props.cardIndex])
 
   const flipTheCard = (id: number) => {
     setActiveQuestion(id);
@@ -36,6 +40,9 @@ const CardContainer = (props: {
       </div>
       <button
         onClick={() => props.setCardIndex(props.cardIndex + 1)}
+        disabled={
+          answeredQuestions.length !== 3
+        }
         className={`relative h-12 overflow-hidden rounded px-5 py-2.5 text-white transition-all duration-300 bg-cyan-700 hover:bg-cyan-700 hover:ring-2 hover:ring-cyan-700 hover:ring-offset-2 disabled:bg-gray-200 disabled:border-gray-200`}
       >
         Ensemble de cartes suivant
