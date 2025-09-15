@@ -81,7 +81,7 @@ const AnswerComponent = (props: {
   return (
     <li
       onClick={!props.userResponse?.[props.id] ? selectAnswer : () => null}
-      className={`border-1 rounded-md flex items justify-center py-2 px-3 ${checkAnswer()}`}
+      className={`border-1 rounded-md flex items justify-center py-2 px-3 text-sm md:text-base ${checkAnswer()}`}
     >
       {checkIfImg(props.answer)}
     </li>

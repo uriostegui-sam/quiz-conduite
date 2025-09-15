@@ -30,10 +30,7 @@ const CardWithQuestions = (props: {
   );
 
   return (
-    <div
-      key={props.cardData.cardNumber}
-      className={`flex items-center justify-center gap-6`}
-    >
+    <>
       {props.cardData.questions.map((question: Question) => {
         const isAnswered = props.answeredQuestions.includes(question.id);
         const cardColor = (isCorrect: string | null) => {
@@ -49,7 +46,7 @@ const CardWithQuestions = (props: {
         return (
           <div
             key={question.id}
-            className={`card ${isAnswered ? "answered" : ""} ${cardColor(questionResults[question.id])}`}
+            className={`card h-32 w-24 sm:h-50 sm:w-35 md:h-80 md:w-64 ${isAnswered ? "answered" : ""} ${cardColor(questionResults[question.id])}`}
             onClick={() => props.flipTheCard(question.id)}
           >
             <div className={`front`}>
@@ -62,7 +59,7 @@ const CardWithQuestions = (props: {
 
       {props.activeQuestion && (
         <div className="modal fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-11/12 max-w-3xl shadow-lg relative">
+          <div className="bg-white rounded-xl p-6 w-11/12 max-w-3xl shadow-lg relative max-h-[90vh] overflow-y-auto">
             <button
               className="absolute top-3 right-3 text-gray-500"
               onClick={() => props.setActiveQuestion(null)}
@@ -99,7 +96,7 @@ const CardWithQuestions = (props: {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

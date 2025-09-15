@@ -27,7 +27,7 @@ const QuestionComponent = (props: {
   const [chosenAnswer, setChosenAnswer] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 ">
+    <div className="flex flex-col items-center justify-center gap-6">
       <Title title={props.card?.question} />
       <ul className="flex flex-col gap-3">
         {all_answers.map((answer: string, i: number) => (

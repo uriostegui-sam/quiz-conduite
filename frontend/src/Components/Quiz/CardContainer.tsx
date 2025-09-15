@@ -15,7 +15,7 @@ const CardContainer = (props: {
 
   useEffect(() => {
     setAnsweredQuestions([]);
-  }, [props.cardIndex])
+  }, [props.cardIndex]);
 
   const flipTheCard = (id: number) => {
     setActiveQuestion(id);
@@ -24,25 +24,28 @@ const CardContainer = (props: {
     <div className="text-center">
       <h2 className="text-4xl">Ensemble {props.cardData.cardNumber}</h2>
       <div className="py-15">
-        <Card
+        <div
           key={props.cardData.cardNumber}
-          cardData={props.cardData}
-          index={props.cardIndex}
-          setIndex={props.setIndex}
-          score={props.score}
-          setScore={props.setScore}
-          flipTheCard={flipTheCard}
-          activeQuestion={activeQuestion}
-          setActiveQuestion={setActiveQuestion}
-          answeredQuestions={answeredQuestions}
-          setAnsweredQuestions={setAnsweredQuestions}
-        />
+          className={`flex items-center justify-between`}
+        >
+          <Card
+            key={props.cardData.cardNumber}
+            cardData={props.cardData}
+            index={props.cardIndex}
+            setIndex={props.setIndex}
+            score={props.score}
+            setScore={props.setScore}
+            flipTheCard={flipTheCard}
+            activeQuestion={activeQuestion}
+            setActiveQuestion={setActiveQuestion}
+            answeredQuestions={answeredQuestions}
+            setAnsweredQuestions={setAnsweredQuestions}
+          />
+        </div>
       </div>
       <button
         onClick={() => props.setCardIndex(props.cardIndex + 1)}
-        disabled={
-          answeredQuestions.length !== 3
-        }
+        disabled={answeredQuestions.length !== 3}
         className={`relative h-12 overflow-hidden rounded px-5 py-2.5 text-white transition-all duration-300 bg-cyan-700 hover:bg-cyan-700 hover:ring-2 hover:ring-cyan-700 hover:ring-offset-2 disabled:bg-gray-200 disabled:border-gray-200`}
       >
         Ensemble de cartes suivant
