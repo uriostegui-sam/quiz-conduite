@@ -22,17 +22,16 @@ const AnswerComponent = (props: {
 
     const input = e.target as HTMLImageElement | HTMLElement;
     const srcImage = input.getAttribute('src')?.slice(baseUrl.length + 1);
-    
-    const selected = input.textContent || srcImage || '';
-    
-    props.setChosenAnswer?.(selected);
+    const selected = !input.firstElementChild ? input.textContent : srcImage;
+
+    props.setChosenAnswer?.(selected as string);
 
     props.setUserResponse?.((prev) => ({
       ...prev,
-      [props.id]: selected,
+      [props.id]: selected as string,
     }));
 
-    if(selected === props.correctAnswer){
+    if(props.correctAnswer === props.correctAnswer){
       props.setScore(props.score + 1);
       props.setIsCorrect?.(true);
     } else {
