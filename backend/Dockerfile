@@ -22,4 +22,4 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-gd --no-scripts
 
 # PHP built-in server
-CMD ["php", "-S", "0.0.0.0:${PORT:-8080}", "-t", "public/"]
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "public/"]
