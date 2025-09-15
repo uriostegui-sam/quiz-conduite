@@ -20,7 +20,7 @@ const CardWithQuestions = (props: {
   answeredQuestions: number[];
   setAnsweredQuestions: React.Dispatch<React.SetStateAction<number[]>>;
 }) => {
-  const [isCard, setIsCard] = useState<boolean>(true);
+  const [isCard] = useState<boolean>(true);
   const [isCorrect, setIsCorrect] = useState<boolean | null | undefined>(null)
   const [questionResults, setQuestionResults] = useState<Record<number, 'correct'|'incorrect'|null>>({});
   const [userResponse, setUserResponse] = useState<Record<number, string | null>>({});
