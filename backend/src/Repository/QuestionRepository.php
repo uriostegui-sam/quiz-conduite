@@ -41,13 +41,20 @@ class QuestionRepository extends ServiceEntityRepository
     public function getIncorrectAnswersForQuestion(int $questionId, string $theme, int $limit = 3): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT answer FROM question WHERE theme = :theme AND id != :id ORDER BY RANDOM() LIMIT :limit';
+        $sql = 'SELECT answer, media_url FROM question WHERE theme = :theme AND id != :id ORDER BY RANDOM() LIMIT :limit';
         $stmt = $conn->prepare($sql);
         $stmt->bindValue('theme', $theme);
         $stmt->bindValue('id', $questionId);
         $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
         $rows = $stmt->executeQuery()->fetchAllAssociative();
-        return array_column($rows, 'answer');
+        $allAnswers = array();
+
+        foreach ($rows as $row) {
+            $newRow = $row['answer'] !== "x" ? $row['answer'] : $row['media_url'];
+            $row = array_push($allAnswers, $newRow);
+        }
+
+        return $allAnswers;
     }
 
 

@@ -1,21 +1,37 @@
 const AnswerComponent = (props: {
   answer: string;
+  id: number;
   incorrectAnswers: Array<string>;
   correctAnswer: string;
-  setChosenAnswer: (answer: string) => void;
-  chosenAnswer: string | null;
+  setChosenAnswer?: (answer: string) => void;
+  chosenAnswer?: string | null;
   score: number;
   setScore: (score: number) => void;
   isCorrect?: boolean | null | undefined;
   setIsCorrect?: (isCorrect: boolean | null | undefined) => void;
   questionResults?: Record<number, 'correct'|'incorrect'|null> | undefined;
   setQuestionResults?: (questionResults: Record<number, 'correct'|'incorrect'|null>) => void;
+  userResponse?: Record<number, string | null> | undefined;
+  setUserResponse?: React.Dispatch<React.SetStateAction<Record<number, string | null>>>;
 }) => {
+
+  const baseUrl = import.meta.env.VITE_IMGS_QUESTIONS_URL;
+  
   const selectAnswer = (e: React.MouseEvent<HTMLLIElement>) => {
     if (props.chosenAnswer) return;
-    const input = e.target as HTMLElement;
-    const selected = input.textContent || "";
-    props.setChosenAnswer(selected);
+
+    const input = e.currentTarget as HTMLImageElement | HTMLElement;
+    const text = input.textContent?.trim();
+    const img = input.querySelector('img');
+    const srcImage = img?.getAttribute('src')?.slice(baseUrl.length + 1);
+    const selected = img ? srcImage : text;
+
+    props.setChosenAnswer?.(selected as string);
+
+    props.setUserResponse?.((prev) => ({
+      ...prev,
+      [props.id]: selected as string,
+    }));
 
     if(selected === props.correctAnswer){
       props.setScore(props.score + 1);
@@ -26,6 +42,18 @@ const AnswerComponent = (props: {
   };
 
   const checkAnswer = () => {
+    const chosen = props.userResponse?.[props.id]
+
+    if(chosen){
+      if(props.answer === props.correctAnswer){
+        return "bg-green-100 border-green-100";
+      }
+      if(props.answer === chosen && chosen !== props.correctAnswer){
+        return "bg-red-100 border-red-100";
+      }
+      return "bg-white border-cyan-700 hover:bg-[#00759516] hover:border-[#00759516]";
+    }
+    
     if (props.answer === props.chosenAnswer) {
       if (props.chosenAnswer === props.correctAnswer) {
         return "bg-green-100 border-green-100";
@@ -41,12 +69,23 @@ const AnswerComponent = (props: {
     return "bg-white border-cyan-700 hover:bg-[#00759516] hover:border-[#00759516]";
   };
 
+  const checkIfImg = (isHref: string): React.ReactNode => {
+    const imageFileFormats = ['avif', 'png', 'jpg', 'webp'];
+    const extension = isHref.split('.').pop()?.toLowerCase();;
+
+    if (extension && imageFileFormats.includes(extension)) {
+      return <img src={baseUrl + '/' + isHref} className="w-40" alt={`images de ${props.correctAnswer}`} />
+    } else {
+      return isHref
+    };
+  }
+
   return (
     <li
-      onClick={selectAnswer}
-      className={`border-1 rounded-md flex items justify-center py-2 px-3 ${checkAnswer()}`}
+      onClick={!props.userResponse?.[props.id] ? selectAnswer : () => null}
+      className={`border-1 rounded-md flex items justify-center py-2 px-3 text-base ${checkAnswer()}`}
     >
-      {props.answer}
+      {checkIfImg(props.answer)}
     </li>
   );
 };

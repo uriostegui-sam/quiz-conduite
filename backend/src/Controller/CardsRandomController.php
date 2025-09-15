@@ -22,14 +22,14 @@ class CardsRandomController extends AbstractController
             $questions = [];
             foreach ($card->getQuestions() as $question) {
                 $incorrect = $questionRepo->getIncorrectAnswersForQuestion($question->getId(), $question->getTheme(), 3);
-                $options = array_merge($incorrect, [$question->getAnswer()]);
+                $options = array_merge($incorrect, [$question->getAnswer() !== "x" ? $question->getAnswer() : $question->getMediaUrl()]);
                 
                 shuffle($options);
                 
                 $questions[] = [
                     'id' => $question->getId(),
                     'question' => $question->getText(),
-                    'correct_answer' => $question->getAnswer(),
+                    'correct_answer' => $question->getAnswer() !== "x" ? $question->getAnswer() : $question->getMediaUrl(),
                     'incorrect_answers' => $incorrect,
                     'all_answers' => $options,
                     'mediaUrl' => $question->getMediaUrl(),

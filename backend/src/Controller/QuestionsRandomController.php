@@ -25,12 +25,12 @@ class QuestionsRandomController extends AbstractController
         $payload = [];
         foreach ($questions as $q) {
             $incorrect = $repo->getIncorrectAnswersForQuestion($q->getId(), $q->getTheme(), 3);
-            $options = array_merge($incorrect, [$q->getAnswer()]);
+            $options = array_merge($incorrect, [$q->getAnswer() !== "x" ? $q->getAnswer() : $q->getMediaUrl()]);
             shuffle($options);
             $payload[] = [
                 'id' => $q->getId(),
                 'question' => $q->getText(),
-                'correct_answer' => $q->getAnswer(),
+                'correct_answer' => $q->getAnswer() !== "x" ? $q->getAnswer() : $q->getMediaUrl(),
                 'incorrect_answers' => $incorrect,
                 'all_answers' => $options,
                 'mediaUrl' => $q->getMediaUrl(),
