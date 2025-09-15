@@ -20,9 +20,11 @@ const AnswerComponent = (props: {
   const selectAnswer = (e: React.MouseEvent<HTMLLIElement>) => {
     if (props.chosenAnswer) return;
 
-    const input = e.target as HTMLImageElement | HTMLElement;
-    const srcImage = input.getAttribute('src')?.slice(baseUrl.length + 1);
-    const selected = !input.firstElementChild ? input.textContent : srcImage;
+    const input = e.currentTarget as HTMLImageElement | HTMLElement;
+    const text = input.textContent?.trim();
+    const img = input.querySelector('img');
+    const srcImage = img?.getAttribute('src')?.slice(baseUrl.length + 1);
+    const selected = img ? srcImage : text;
 
     props.setChosenAnswer?.(selected as string);
 
@@ -31,7 +33,7 @@ const AnswerComponent = (props: {
       [props.id]: selected as string,
     }));
 
-    if(props.correctAnswer === props.correctAnswer){
+    if(selected === props.correctAnswer){
       props.setScore(props.score + 1);
       props.setIsCorrect?.(true);
     } else {
@@ -81,7 +83,7 @@ const AnswerComponent = (props: {
   return (
     <li
       onClick={!props.userResponse?.[props.id] ? selectAnswer : () => null}
-      className={`border-1 rounded-md flex items justify-center py-2 px-3 text-sm md:text-base ${checkAnswer()}`}
+      className={`border-1 rounded-md flex items justify-center py-2 px-3 text-base ${checkAnswer()}`}
     >
       {checkIfImg(props.answer)}
     </li>
