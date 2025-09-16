@@ -1,42 +1,56 @@
-# Stage 1: build PHP app
-FROM php:8.3-fpm AS build
+# Stage 1: Builder
+FROM php:8.3-fpm AS builder
 
-# Install dependencies
+WORKDIR /app
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git unzip zip libzip-dev libpq-dev \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip pdo pdo_pgsql \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install gd zip pdo pdo_pgsql
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+# Copy only composer files first
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-gd --no-scripts
+
+# Copy app source
 COPY . .
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
+# Set permissions for cache/logs
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var
 
-# Install PHP dependencies without dev packages
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-gd
-
-# Pre-warm Symfony cache for prod
+# Clear Symfony cache for prod
 RUN php bin/console cache:clear --env=prod
-RUN php bin/console cache:warmup --env=prod
 
-# Stage 2: runtime
+# Stage 2: Production image
 FROM php:8.3-fpm
 
 WORKDIR /app
 
-# Copy built app from build stage
-COPY --from=build /app /app
+# Install Nginx and Supervisor
+RUN apt-get update && apt-get install -y \
+    nginx supervisor \
+    && rm -rf /var/lib/apt/lists/*
 
-# Ensure .env exists (Render provides env vars)
-RUN touch .env
+# Copy built app
+COPY --from=builder /app /app
 
-# Expose PHP-FPM socket
-EXPOSE 9000
+# Copy Nginx config
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Supervisor config to run both services
+RUN mkdir -p /etc/supervisor/conf.d
+COPY ./nginx/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose Render port
+EXPOSE 8080
+
+# Run Supervisor (which manages PHP-FPM and Nginx)
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
