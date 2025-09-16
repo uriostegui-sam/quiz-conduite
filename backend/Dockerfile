@@ -1,9 +1,12 @@
-# Stage 1: Builder
+# Stage 1: Builder (install deps & prepare prod cache)
 FROM php:8.3-fpm AS builder
+
+# avoid interactive prompts
+ARG DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system deps needed for PHP extensions + unzip/git
 RUN apt-get update && apt-get install -y \
     git unzip zip libzip-dev libpq-dev \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
@@ -11,47 +14,49 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd zip pdo pdo_pgsql \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
+# Install Composer (copy from official composer image)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy only composer files first
+# Allow composer as root (we're in Docker)
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Copy only composer files first for caching
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Install PHP deps but DO NOT run composer scripts (avoid symfony-cmd)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Copy app source
+# Now copy the rest of the code
 COPY . .
 
-# Set permissions for cache/logs
-RUN mkdir -p var/cache var/log \
-    && chown -R www-data:www-data var
+# Ensure env for cache commands (change if you want other values at build)
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
 
-# Clear Symfony cache for prod
-RUN php bin/console cache:clear --env=prod
+# Run Symfony cache clear/warmup manually (do not rely on composer auto-scripts)
+RUN php bin/console cache:clear --no-warmup --env=prod \
+ && php bin/console cache:warmup --env=prod \
+ && chown -R www-data:www-data var
 
-# Stage 2: Production image
+# Stage 2: Runtime image
 FROM php:8.3-fpm
 
 WORKDIR /app
 
-# Install Nginx and Supervisor
+# Install minimal runtime packages if needed (we already built vendor)
 RUN apt-get update && apt-get install -y \
     nginx supervisor \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy built app
+# Copy built app + vendor from builder
 COPY --from=builder /app /app
 
-# Copy Nginx config
+# Copy nginx config and supervisor config if you use them
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Supervisor config to run both services
-RUN mkdir -p /etc/supervisor/conf.d
 COPY ./nginx/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Expose Render port
+# Expose port Render / hosting expects
 EXPOSE 8080
 
-# Run Supervisor (which manages PHP-FPM and Nginx)
+# Use supervisord to run both php-fpm and nginx
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
