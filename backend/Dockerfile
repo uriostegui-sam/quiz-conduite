@@ -15,16 +15,11 @@ WORKDIR /app
 # Copy application code
 COPY . .
 
+# Ensure a dummy .env file exists in the container
+RUN touch .env
+
 # Set composer to allow superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
-
-# 👇 Forzar variables de entorno dentro del contenedor
-ENV APP_ENV=prod
-ENV APP_DEBUG=0
-
-# ⚠️ Aquí se ponen vacías, Render las sobreescribirá con tus valores
-ENV APP_SECRET=placeholder
-ENV DATABASE_URL=postgresql://user:pass@host:5432/dbname
 
 # Install dependencies without any scripts
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-gd --no-scripts
