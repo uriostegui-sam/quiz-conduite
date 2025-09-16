@@ -9,7 +9,8 @@ return function (array $context) {
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
 };
 
-// If .env file exists, load it (local/dev). In production, rely on Render env vars
-if (file_exists(dirname(__DIR__).'/.env')) {
-    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+// Load .env only if it exists (for local/dev). In Render prod, skip
+$envFile = dirname(__DIR__).'/.env';
+if (file_exists($envFile)) {
+    (new Dotenv())->bootEnv($envFile);
 }
