@@ -29,17 +29,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 # Now copy the rest of the code
 COPY . .
 
-# Ensure a dummy .env file exists in the container
-RUN touch .env
-
-# Ensure env for cache commands (change if you want other values at build)
-ENV APP_ENV=prod
-ENV APP_DEBUG=0
-
-# Run Symfony cache clear/warmup manually (do not rely on composer auto-scripts)
-RUN php bin/console cache:clear --no-warmup --env=prod \
- && php bin/console cache:warmup --env=prod \
- && chown -R www-data:www-data var
+# Set permissions for cache/logs
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var
 
 # Stage 2: Runtime image
 FROM php:8.3-fpm
