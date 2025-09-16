@@ -29,6 +29,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 # Now copy the rest of the code
 COPY . .
 
+# Ensure a dummy .env file exists in the container
+RUN touch .env
+
 # Ensure env for cache commands (change if you want other values at build)
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
