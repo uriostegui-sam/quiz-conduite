@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     git unzip zip libzip-dev libpq-dev \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip pdo pdo_pgsql
+    && docker-php-ext-install gd zip pdo pdo_pgsql \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -17,7 +18,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-gd --no-scripts
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Copy app source
 COPY . .
