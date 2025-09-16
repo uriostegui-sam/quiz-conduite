@@ -22,7 +22,7 @@ RUN touch .env
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install dependencies without any scripts
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-gd --no-scripts
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-gd
 
 # PHP built-in server
 CMD ["php", "-S", "0.0.0.0:8080", "-t", "public/"]
