@@ -59,6 +59,13 @@ EXPOSE 80
 # Change PHP-FPM to listen on port 127.0.0.1:9000 (default is a socket)
 RUN sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/*.conf
 
+# Change PHP-FPM to listen on port 127.0.0.1:9000 (default is a socket)
+RUN sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/*.conf
+
+# Ensure php-fpm does NOT clear the environment and pass important vars into FPM
+RUN sed -i 's|^clear_env = .*|clear_env = no|' /usr/local/etc/php-fpm.d/*.conf || true \
+ && { echo; echo '; Injected env for Render'; echo 'env[APP_ENV] = prod'; echo 'env[APP_RUNTIME_DONTLOADENV] = 1'; } >> /usr/local/etc/php-fpm.d/www.conf
+
 # Symfony: don't look for .env in production, only use injected env vars
 ENV APP_RUNTIME_DONTLOADENV=1
 
