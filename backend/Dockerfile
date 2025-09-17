@@ -54,7 +54,7 @@ COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY ./nginx/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose port Render / hosting expects
-EXPOSE 8080
+EXPOSE 80
 
 # Change PHP-FPM to listen on port 9000 (default is a socket)
 RUN sed -i 's|^listen = .*|listen = 9000|' /usr/local/etc/php-fpm.d/www.conf
