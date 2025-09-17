@@ -44,20 +44,19 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Remove the default Nginx config
-RUN rm -f /etc/nginx/conf.d/default.conf
+RUN rm -f /etc/nginx/conf.d/*
 
 # Copy built app + vendor from builder
 COPY --from=builder /app /app
 
 # Copy nginx config and supervisor config if you use them
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/default.conf /etc/nginx/conf.d/app.conf
 COPY ./nginx/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose port Render / hosting expects
 EXPOSE 80
 
-# Change PHP-FPM to listen on port 9000 (default is a socket)
-RUN sed -i 's|^listen = .*|listen = 9000|' /usr/local/etc/php-fpm.d/www.conf
+# Change PHP-FPM to listen on port 127.0.0.1:9000 (default is a socket)
 RUN sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
 # Use supervisord to run both php-fpm and nginx
