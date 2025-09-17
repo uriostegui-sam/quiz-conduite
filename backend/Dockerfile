@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Remove the default Nginx config
-RUN rm -f /etc/nginx/conf.d/*
+RUN rm -rf /etc/nginx/conf.d/* /etc/nginx/sites-enabled/* /etc/nginx/sites-available/*
 
 # Copy built app + vendor from builder
 COPY --from=builder /app /app
