@@ -58,6 +58,7 @@ EXPOSE 80
 
 # Change PHP-FPM to listen on port 9000 (default is a socket)
 RUN sed -i 's|^listen = .*|listen = 9000|' /usr/local/etc/php-fpm.d/www.conf
+RUN sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
 # Use supervisord to run both php-fpm and nginx
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
