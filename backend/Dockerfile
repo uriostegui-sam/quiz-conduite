@@ -43,6 +43,9 @@ RUN apt-get update && apt-get install -y \
     nginx supervisor \
     && rm -rf /var/lib/apt/lists/*
 
+# Remove the default Nginx config
+RUN rm -f /etc/nginx/conf.d/default.conf
+
 # Copy built app + vendor from builder
 COPY --from=builder /app /app
 
