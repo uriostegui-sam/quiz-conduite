@@ -53,9 +53,6 @@ COPY --from=builder /app /app
 COPY ./nginx/default.conf /etc/nginx/conf.d/app.conf
 COPY ./nginx/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-#Fix env error
-RUN touch /app/.env
-
 # Expose port Render / hosting expects
 EXPOSE 80
 
