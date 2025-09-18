@@ -36,11 +36,15 @@ RUN mkdir -p var/cache var/log \
 # Stage 2: Runtime image
 FROM php:8.3-fpm
 
+ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
 # Install minimal runtime packages if needed (we already built vendor)
 RUN apt-get update && apt-get install -y \
-    nginx supervisor \
+    libpq-dev libicu-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    nginx supervisor unzip zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd zip pdo pdo_pgsql intl \
     && rm -rf /var/lib/apt/lists/*
 
 # Remove the default Nginx config
