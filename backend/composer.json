@@ -19,7 +19,6 @@
         "phpstan/phpdoc-parser": "^2.2",
         "symfony/asset": "6.4.*",
         "symfony/console": "6.4.*",
-        "symfony/dotenv": "6.4.*",
         "symfony/expression-language": "6.4.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.4.*",
@@ -76,6 +75,9 @@
         "symfony/symfony": "*"
     },
     "extra": {
+        "runtime": {
+            "dotenv": false
+        },
         "symfony": {
             "allow-contrib": false,
             "require": "6.4.*"
@@ -85,6 +87,7 @@
         "phpunit/phpunit": "^12.3",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
+        "symfony/dotenv": "6.4.*",
         "symfony/maker-bundle": "^1.64",
         "symfony/stopwatch": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*"
