@@ -8,7 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     libpq-dev libicu-dev zlib1g-dev g++ \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
-    unzip zip git \
+    libzip-dev unzip zip git \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install -j$(nproc) gd zip pdo pdo_pgsql intl \
  && rm -rf /var/lib/apt/lists/*
@@ -36,7 +36,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     libpq-dev libicu-dev zlib1g-dev g++ \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
-    nginx supervisor unzip zip \
+    libzip-dev unzip zip git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd zip pdo pdo_pgsql intl \
     && rm -rf /var/lib/apt/lists/*
