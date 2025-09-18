@@ -1,66 +1,59 @@
 # Stage 1: Builder (install deps & prepare prod cache)
 FROM php:8.3-fpm AS builder
 
-# avoid interactive prompts
 ARG DEBIAN_FRONTEND=noninteractive
-
 WORKDIR /app
 
-# Install system deps needed for PHP extensions + unzip/git
+# Install system deps needed for PHP extensions
 RUN apt-get update && apt-get install -y \
-    git unzip zip libzip-dev libpq-dev \
+    libpq-dev libicu-dev zlib1g-dev g++ \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip pdo pdo_pgsql \
-    && rm -rf /var/lib/apt/lists/*
+    unzip zip git \
+ && docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) gd zip pdo pdo_pgsql intl \
+ && rm -rf /var/lib/apt/lists/*
 
-# Install Composer (copy from official composer image)
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Allow composer as root (we're in Docker)
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Copy only composer files first for caching
+# Copy composer files + install vendors
 COPY composer.json composer.lock ./
-
-# Install PHP deps but DO NOT run composer scripts (avoid symfony-cmd)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Now copy the rest of the code
+# Copy rest of code
 COPY . .
 
-# Set permissions for cache/logs
+# Permissions
 RUN mkdir -p var/cache var/log \
-    && chown -R www-data:www-data var
+ && chown -R www-data:www-data var
 
-# Stage 2: Runtime image
+# Stage 2: Runtime
 FROM php:8.3-fpm
-
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
-# Install minimal runtime packages if needed (we already built vendor)
 RUN apt-get update && apt-get install -y \
-    libpq-dev libicu-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    libpq-dev libicu-dev zlib1g-dev g++ \
+    libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     nginx supervisor unzip zip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip pdo pdo_pgsql intl \
+    && docker-php-ext-install -j$(nproc) gd zip pdo pdo_pgsql intl \
     && rm -rf /var/lib/apt/lists/*
 
-# Remove the default Nginx config
+# Remove default Nginx config
 RUN rm -rf /etc/nginx/conf.d/* /etc/nginx/sites-enabled/* /etc/nginx/sites-available/*
 
 # Copy built app + vendor from builder
 COPY --from=builder /app /app
 
-# Copy nginx config and supervisor config if you use them
+# Copy configs
 COPY ./nginx/default.conf /etc/nginx/conf.d/app.conf
 COPY ./nginx/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Expose port Render / hosting expects
 EXPOSE 80
 
-# Configure PHP-FPM pool to not clear env and inject needed vars
+# Configure PHP-FPM pool
 RUN { \
   echo '[www]'; \
   echo 'listen = 127.0.0.1:9000'; \
@@ -69,8 +62,6 @@ RUN { \
   echo 'env[APP_RUNTIME_DONTLOADENV] = 1'; \
 } > /usr/local/etc/php-fpm.d/zzz-render.conf
 
-# Symfony: don't look for .env in production, only use injected env vars
 ENV APP_RUNTIME_DONTLOADENV=1
 
-# Use supervisord to run both php-fpm and nginx
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
